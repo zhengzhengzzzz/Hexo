@@ -95,7 +95,6 @@ cover:
     - https://lmy-1311156074.cos.ap-nanjing.myqcloud.com/test/wallhaven-yxjppd_1920x1080.png
     - https://lmy-1311156074.cos.ap-nanjing.myqcloud.com/test/wallhaven-m3dqj8_1920x1080.png
     - https://lmy-1311156074.cos.ap-nanjing.myqcloud.com/test/wallhaven-gpjo6e_1920x1080.png
-    - https://lmy-1311156074.cos.ap-nanjing.myqcloud.com/test/wallhaven-gp88dq_1920x1080.png
 # Replace Broken Images (替換無法顯示的圖片)
 error_img:
   flink: /img/friend_404.gif
