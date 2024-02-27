@@ -3,17 +3,17 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 茜茜的博客
-subtitle: "茜茜的博客"
+title: zhengjiaxi的博客
+subtitle: "zhengjiaxi的博客"
 description: ""
 keywords:
-author: Xixi
+author: zhengjiaxi
 language: en
 timezone: ""
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: http://example.com
+url: https://github.com/zhengzhengzzzz
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
