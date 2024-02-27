@@ -25,4 +25,4 @@ jobs:
           target_branch: gh-pages
           build_dir: Hexo
         env:
-          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          GITHUB_TOKEN: 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
