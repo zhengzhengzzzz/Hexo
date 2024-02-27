@@ -909,6 +909,7 @@ css_prefix: true
 inject:
   head:
     # - <link rel="stylesheet" href="/xxx.css">
+    - <meta name="referrer" content="never">
   bottom:
     # - <script src="xxxx"></script>
 
