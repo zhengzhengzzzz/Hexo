@@ -51,13 +51,13 @@ avatar:
 disable_top_img: false
 
 # The banner image of home page
-index_img: https://npm.elemecdn.com/randompic_nianzhu@1.0.0/bgWebp/1.webp
+# index_img: https://npm.elemecdn.com/randompic_nianzhu@1.0.0/bgWebp/1.webp
 
 # If the banner of page not setting, it will show the top_img
-default_top_img: https://npm.elemecdn.com/randompic_nianzhu@1.0.0/bgWebp/1.webp
+# default_top_img: https://npm.elemecdn.com/randompic_nianzhu@1.0.0/bgWebp/1.webp
 
 # The banner image of archive page
-archive_img: https://npm.elemecdn.com/randompic_nianzhu@1.0.0/bgWebp/1.webp
+# archive_img: https://npm.elemecdn.com/randompic_nianzhu@1.0.0/bgWebp/1.webp
 
 # If the banner of tag page not setting, it will show the top_img
 # note: tag page, not tags page (子標籤頁面的 top_img)
