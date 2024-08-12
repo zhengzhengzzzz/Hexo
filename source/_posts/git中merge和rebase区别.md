@@ -5,6 +5,7 @@ tags: 前端 git
 categories: bo‘k
 ---
 
+
 ## git merge
 `git merge`不对仓库历史做任何改变，它会保留分支上所有的历史commit，然后简单地创建一个合并的commit。
 **使用`git merge`将`master`分支合并到`feature`分支**
