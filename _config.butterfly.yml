@@ -48,7 +48,7 @@ avatar:
   effect: false
 
 # Disable all banner image
-disable_top_img: false
+disable_top_img: true
 
 # The banner image of home page
 # index_img: https://npm.elemecdn.com/randompic_nianzhu@1.0.0/bgWebp/1.webp
