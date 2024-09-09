@@ -1,3 +1,10 @@
+---
+title: react原理学习
+date: 2024-7-25 20:34:27
+tags: 前端 git
+categories: bo‘k
+---
+
 软件的设计是为了服务理念。只有懂了设计理念，才能明白为了实现这样的理念需要如何架构。
 所以，在我们深入源码架构之前，先来聊聊`React`理念。
 
@@ -20,7 +27,7 @@
 当项目变得庞大、组件数量繁多时，就容易遇到 CPU 的瓶颈。
 考虑如下 Demo，我们向视图中渲染 3000 个`li`：
 
-```
+```TSX
 function App() {
   const len = 3000;
   return (
@@ -63,7 +70,7 @@ JS脚本执行 -----  样式布局 ----- 样式绘制
 
 接下来我们开启`Concurrent Mode`（开启后会启用`时间切片`）：
 
-```
+```TSX
 // 通过使用ReactDOM.unstable_createRoot开启Concurrent Mode
 // ReactDOM.render(<App/>, rootEl);
 ReactDOM.unstable_createRoot(rootEl).render(<App />);
@@ -77,14 +84,14 @@ ReactDOM.unstable_createRoot(rootEl).render(<App />);
 
 1. `legacy` 模式: `ReactDOM.render(<App />, rootNode)`. 这是当前 React app 使用的方式. 这个模式可能不支持[这些新功能(concurrent 支持的所有功能)](https://zh-hans.reactjs.org/docs/concurrent-mode-patterns.html#the-three-steps).
 
-   ```
+   ```TSX
    // LegacyRoot
    ReactDOM.render(<App />, document.getElementById('root'), (dom) => {}); // 支持callback回调, 参数是一个dom对象
    ```
 
 2. [Blocking 模式](https://zh-hans.reactjs.org/docs/concurrent-mode-adoption.html#migration-step-blocking-mode): `ReactDOM.createBlockingRoot(rootNode).render(<App />)`. 目前正在实验中, 它仅提供了 `concurrent` 模式的小部分功能, 作为迁移到 `concurrent` 模式的第一个步骤.
 
-   ```
+   ```TSX
    // BlockingRoot// 1. 创建ReactDOMRoot对象
    const reactDOMBlockingRoot = ReactDOM.createBlockingRoot(  document.getElementById('root'),);
    // 2. 调用render
@@ -93,7 +100,7 @@ ReactDOM.unstable_createRoot(rootEl).render(<App />);
 
 3. [Concurrent 模式](https://zh-hans.reactjs.org/docs/concurrent-mode-adoption.html#enabling-concurrent-mode): `ReactDOM.createRoot(rootNode).render(<App />)`. 目前在实验中, 未来稳定之后，打算作为 React 的默认开发模式. 这个模式开启了所有的新功能.
 
-   ```
+   ```TSX
    // ConcurrentRoot
    // 1. 创建ReactDOMRoot对象
    const reactDOMRoot = ReactDOM.createRoot(document.getElementById('root'));
@@ -169,7 +176,7 @@ React16 架构可以分为三层：
 我们知道，在 React15 中**Reconciler**是递归处理虚拟 DOM 的。让我们看看[React16 的 Reconciler](https://github.com/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/react-reconciler/src/ReactFiberWorkLoop.new.js#L1673)。
 我们可以看见，更新工作从递归变成了可以中断的循环过程。每次循环都会调用`shouldYield`判断当前是否有剩余时间。
 
-```
+```TSX
 /** @noinline */
 function workLoopConcurrent() {
   // Perform work until Scheduler asks us to yield
@@ -182,7 +189,7 @@ function workLoopConcurrent() {
 那么 React16 是如何解决中断更新时 DOM 渲染不完全的问题呢？
 在 React16 中，**Reconciler**与**Renderer**不再是交替工作。当**Scheduler**将任务交给**Reconciler**后，**Reconciler**会为变化的虚拟 DOM 打上代表增/删/更新的标记，类似这样：
 
-```
+```TS
 export const Placement = /*             */ 0b0000000000010;
 export const Update = /*                */ 0b0000000000100;
 export const PlacementAndUpdate = /*    */ 0b0000000000110;
@@ -193,7 +200,7 @@ export const Deletion = /*              */ 0b0000000001000;
 
 **Renderer**根据**Reconciler**为虚拟 DOM 打的标记，同步执行对应的 DOM 操作。
 
-![image.png](/tencent/api/attachments/s3/url?attachmentid=23014462)
+![image.png](https://i-blog.csdnimg.cn/direct/50b9aa78b25d4bc0813e8c170109a32c.png)
 
 其中红框中的步骤随时可能由于以下原因被中断：
 
@@ -204,7 +211,7 @@ export const Deletion = /*              */ 0b0000000001000;
 
 整个**Scheduler**与**Reconciler**的工作都在内存中进行。只有当所有组件都完成**Reconciler**的工作，才会统一交给**Renderer**。
 
-![image.png](/tencent/api/attachments/s3/url?attachmentid=23014871)
+![image.png](https://i-blog.csdnimg.cn/direct/5713eb507ede4c2aa31ea51f2ff0396e.png)
 
 ## 基础包结构
 
@@ -224,7 +231,7 @@ export const Deletion = /*              */ 0b0000000001000;
    - 核心任务就是执行回调(回调函数由`react-reconciler`提供)
    - 通过控制回调函数的执行时机, 来达到任务分片的目的, 实现可中断渲染(`concurrent`模式下才有此特性)
 
-![image.png](/tencent/api/attachments/s3/url?attachmentid=23099238)
+![image.png](https://i-blog.csdnimg.cn/direct/c3521758c6584a91ba5322e7f3f4e8b5.png)
 
 ## Fiber 的起源
 
@@ -242,7 +249,7 @@ export const Deletion = /*              */ 0b0000000001000;
 2. 作为静态的数据结构来说，每个`Fiber节点`对应一个`React element`，保存了该组件的类型（函数组件/类组件/原生组件...）、对应的 DOM 节点等信息。
 3. 作为动态的工作单元来说，每个`Fiber节点`保存了本次更新中该组件改变的状态、要执行的工作（需要被删除/被插入页面中/被更新...）。
 
-```
+```TS
 function FiberNode(
   tag: WorkTag,
   pendingProps: mixed,
@@ -292,7 +299,7 @@ function FiberNode(
 
 每个 Fiber 节点有个对应的`React element`，多个`Fiber节点`是如何连接形成树呢？靠如下三个属性：
 
-```
+```TS
 // 指向父级Fiber节点
 this.return = null;
 // 指向子Fiber节点
@@ -303,7 +310,7 @@ this.sibling = null;
 
 举个例子，如下的组件结构：
 
-```
+```TS
 function App() {
   return (
     <div>
@@ -315,13 +322,13 @@ function App() {
 ```
 
 对应的`Fiber树`结构：
-![image.png](/tencent/api/attachments/s3/url?attachmentid=23015362)
+![image.png](https://i-blog.csdnimg.cn/direct/554348377a37480892ff8869d5fdaefe.png)
 
 ### 作为静态的数据结构
 
 作为一种静态的数据结构，保存了组件相关的信息：
 
-```
+```TS
 // Fiber对应组件的类型 Function/Class/Host...
 this.tag = tag;
 // key属性
@@ -338,7 +345,7 @@ this.stateNode = null;
 
 作为动态的工作单元，`Fiber`中如下参数保存了本次更新相关的信息：
 
-```
+```TS
 // 保存本次更新造成的状态改变相关信息
 this.pendingProps = pendingProps;
 this.memoizedProps = null;
@@ -358,7 +365,7 @@ this.lastEffect = null;
 
 如下两个字段保存调度优先级相关的信息：
 
-```
+```TS
 // 调度优先级相关
 this.lanes = NoLanes;
 this.childLanes = NoLanes;
@@ -378,10 +385,10 @@ this.childLanes = NoLanes;
    - `DOM`将文档解析为一个由节点和对象（包含属性和方法的对象）组成的结构集合, 也就是常说的`DOM树`.
    - `JavaScript`可以访问和操作存储在 DOM 中的内容, 也就是操作`DOM对象`, 进而触发 UI 渲染.
 
-![image.png](/tencent/api/attachments/s3/url?attachmentid=23015886)
+![image.png](https://i-blog.csdnimg.cn/direct/be1feb471b2641558f29b26e3abaf339.png)
 
 它们之间的关系反映了我们书写的 JSX 代码到 DOM 节点的转换过程：
-![image.png](/tencent/api/attachments/s3/url?attachmentid=23015919)
+![image.png](https://i-blog.csdnimg.cn/direct/f9c7057ae7fa4bbc908b43d228337248.png)
 
 ### 双缓冲技术(double buffering)
 
@@ -395,15 +402,15 @@ this.childLactElemes = NoLant`转换成`fiber树`的过程. 在这个过程中, 
 用图来表述`double buffering`的概念如下:
 
 1. 构造过程中, `fiberRoot.curreact`指向当前界面对应的`fiber`树.
-   ![image.png](/tencent/api/attachments/s3/url?attachmentid=23019742)
+   ![image.png](https://i-blog.csdnimg.cn/direct/8303b37df32b4b7090274b9181bf6b64.png)
 2. 构造完成并渲染, 切换`fiberRook/react.current`指针, 使其继续指向当前界面对应的`fiber`树(原来代表界面的 fiber 树, 变成了内存中).
-   ![image.png](/tencent/api/attachments/s3/url?attachmentid=23019757)
+   ![image.png](https://i-blog.csdnimg.cn/direct/80c7cc52f68c454a92907ce7ca3f01fc.png)
 
 ## React 工作循环 (workLoop)
 
 在 reaactElement 工作时有两个大的循环, 它们分别位于`scheduler`和`react/blob/v17.0.2/packages/react-reconciler`包中:
 
-![image.png](/tencent/api/attachments/s3/url?attachmentid=23020385)
+![image.png](https://i-blog.csdnimg.cn/direct/51bc2eb27a844d10996fc53ed66bfec9.png)
 
 本文将这两个循环分别表述为`任务调度循环`和`fiber构造循环`
 
@@ -431,7 +438,7 @@ this.childLactElemes = NoLant`转换成`fiber树`的过程. 在这个过程中, 
 ## 启动流程
 
 在调用入口函数之前,`reactElement(<App/>)`和 DOM 对象`div#root`之间没有关联, 用图片表示如下:
-![image](data:image/png;base64,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)
+![image](https://i-blog.csdnimg.cn/direct/e71dc06b26534483a609de2527d7ec79.png)
 
 ### 创建全局对象
 
@@ -449,7 +456,7 @@ this.childLactElemes = NoLant`转换成`fiber树`的过程. 在这个过程中, 
 
 这 3 个对象是 react 体系得以运行的基本保障, 一经创建大多数场景不会再销毁(除非卸载整个应用`root.unmount()`).
 这一过程是从`react-dom`包发起, 内部调用了`react-reconciler`包, 核心流程图如下(其中红色标注了 3 个对象的创建时机).
-![image.png](/tencent/api/attachments/s3/url?attachmentid=23020565)
+![image.png](https://i-blog.csdnimg.cn/direct/75505effcf424383aba085e6b0457d3f.png)
 
 ### 创建 ReactDOM(Blocking)Root 对象
 
@@ -480,14 +487,14 @@ this.childLactElemes = NoLant`转换成`fiber树`的过程. 在这个过程中, 
 注意:`fiber`树中所有节点的`mode`都会和`HostRootFiber.mode`一致(新建的 fiber 节点, 其 mode 来源于父节点),所以**HostRootFiber.mode**非常重要, 它决定了以后整个 fiber 树构建过程.
 运行到这里, 3 个对象创建成功, `react`应用的初始化完毕.
 将此刻内存中各个对象的引用情况表示出来:
-![image.png](/tencent/api/attachments/s3/url?attachmentid=23020792)
+![image.png](https://i-blog.csdnimg.cn/direct/232f09a147fe42efa1311d8a7f4ee6d1.png)
 
 ## 调用更新入口
 
 1. legacy
    回到`legacyRenderSubtreeIntoContainer`函数中有:
 
-```
+```TS
 // 2. 更新容器
 unbatchedUpdates(() => {  updateContainer(children, fiberRoot, parentComponent, callback);});
 ```
@@ -501,7 +508,7 @@ unbatchedUpdates(() => {  updateContainer(children, fiberRoot, parentComponent, 
 
 继续跟踪[`updateContainer`函数](https://github.com/facebook/react/blob/v17.0.2/packages/react-reconciler/src/ReactFiberRecockinciler.old.js#L250-L321)
 
-```
+```TS
 export function updateContainer(  element: ReactNodeList,  container: OpaqueRoot,  parentComponent: ?React$Component<any, any>,  callback: ?Function,): Lane {  const current = container.current;  // 1. 获取当前时间戳, 计算本次更新的优先级
 const eventTime = requestEventTime();
 const lane = requestUpdateLane(current);
@@ -533,7 +540,7 @@ const lane = requestUpdateLane(current);
 
 以上功能源码都集中在[ReactFiberWorkLoop.js](https://github.com/facebook/react/blob/v17.0.2/packages/react-dom/src/client/src/ReactFiberWorkLoop.old.js)中. 现在将这些功能(从输入到输出)串联起来, 用下图表示:
 
-![image.png](/tencent/api/attachments/s3/url?attachmentid=23022065)
+![image.png](https://i-blog.csdnimg.cn/direct/5cd131fe83af410da49e78e521eb5e2d.png)
 
 图中的`1,2,3,4`步骤可以反映`react-reconciler`包`从输入到输出`的运作流程,这是一个固定流程, 每一次更新都会运行.
 
@@ -545,7 +552,7 @@ const lane = requestUpdateLane(current);
 
 在这两个方法中会调用如下两个方法：
 
-```
+```TS
 // performSyncWorkOnRoot会调用该方法
 function workLoopSync() {
   while (workInProgress !== null) {
@@ -581,7 +588,7 @@ function workLoopConcurrent() {
 “递”和“归”阶段会交错执行直到“归”到`rootFiber`。至此，`render阶段`的工作就结束了。
 
 ###例子：
-![image.png](/tencent/api/attachments/s3/url?attachmentid=23021287)
+![image.png](https://i-blog.csdnimg.cn/direct/bca4c45572c748e7aac8cb7fa586ea9d.png)
 
 ###beginWork
 可以从[源码这里](https://github.cotFiber`时, 其中`fiber.m/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/react-reconciler/src/ReactFiberBeginWork.new.js#L3075)看到`beginWork`的定义。整个方法大概有 500 行代码。
@@ -589,7 +596,7 @@ function workLoopConcurrent() {
 
 ####从传参看方法执行
 
-```
+```TS
 function beginWork(
   current: Fiber | null,
   workInProgress: Fiber,
@@ -613,7 +620,7 @@ function beginWork(
 - `update`时：如果`current`存在，在满足一定条件时可以复用`current`节点，这样就能克隆`current.child`作为`workInProgress.child`，而不需要新建`workInProgress.child`。
 - `mount`时：除`fiberRootNode`以外，`current === null`。会根据`fiber.tag`不同，创建不同类型的`子Fiber节点`
 
-```
+```TS
 function beginWork(
   current: Fiber | null,
   workInProgress: Fiber,
@@ -657,7 +664,7 @@ function beginWork(
 1. `oldProps === newProps && workInProgress.type === current.type`，即`props`与`fiber.type`不变
 2. `!includesSomeLane(renderLanes, updateLanes)`，即当前`Fiber节点`优先级不够，会在讲解`SchedUpdates(() => {  updateContainer(children, fiberRoot, par`时介绍
 
-```
+```TS
 if (current !== null) {
   const oldProps = current.memoizedProps;
   const newProps = workInProgress.pendingProps;
@@ -691,7 +698,7 @@ if (current !== null) {
 
 > 可以从[这里](https://github.com/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/react-reconciler/src/Res`, 更改执行上下文为`LegacyUnbatWorkTags.js)看到`tag`对应的组件类型
 
-```
+```TS
 // mount时：根据tag不同，创建不同的Fiber节点
 switch (workInProgress.tag) {
   case Intext`, 之后调用`updateContaineterminateComponent:
@@ -721,7 +728,7 @@ switch (workInProgress.tag) {
 - 对于`mount`的组件，他会创建新的`子Fiber节点`
 - 对于`update`的组件，他会将当前组件与该组件在上次更新时对应的`Fiber节点`比较（也就是俗称的`Diff`算法），将比较的结果生成新`Fiber节点`
 
-```
+```TS
 export function reconcileChildren(
   current: Fiber | null,
   workInProgress: Fiber,
@@ -762,7 +769,7 @@ export function reconcileChildren(
 
 比如：
 
-```
+```TS
 // DOM需要插入到页面中
 export const PlacemeCont = /*                */ 0b00000000000010;
 // DOM需要更新
@@ -786,13 +793,13 @@ export conschedulerUpdat Deletion = /*                 */ 0b00000000001000;
 
 为了解决这个问题，在`mount`时只有`rootFiber`会赋值`Placement effectTag`，在`commit阶段`只会执行一次插入操作。
 
-![image.png](/tencent/api/attachments/s3/url?attachmentid=23021903)
+![image.png](https://i-blog.csdnimg.cn/direct/65696390365e426da563e6ef3c97502d.png)
 
 ###completeWork
 组件执行`beginWork`后会创建`子Fiber节点`，节点上可能存在`effectTag`。
 类似`beginWork`，`completeWork`也是针对不同`fiber.tag`调用不同的处理逻辑。
 
-```
+```TS
 function completeWork(
   current: Fiber | null,
   workInProgress: Fiber,
@@ -835,7 +842,7 @@ function completeWork(
 和`beginWork`一样，我们根据`current === null ?`判断是`mount`还是`update`。
 同时针对`HostComponent`，判断`update`时我们还需要考虑`workInProgress.stateNode != null ?`（即该`Fiber节点`是否存在对应的`DOM节点`）
 
-```
+```TS
 case HostComponent: {
   popHostContext(workInProgress);
   const rootContainerInstance = getRootHostContainer();
@@ -862,7 +869,7 @@ case HostComponent: {
 
 我们去掉一些当前不需要关注的功能（比如`ref`）。可以看到最主要的逻辑是调用`updateHostComponent`方法。
 
-```
+```TS
 if (current !== null && workInProgress.stateNode != null) {
   // update的情况
   updateHostComponent(
@@ -878,7 +885,7 @@ if (current !== null && workInProgress.stateNode != null) {
 可以从[这里](https://github.com/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/react-reconciler/src/ReactFiberCompleteWork.new.js#L225)看到`updateHostComponent`方法定义。
 在`updateHostComponent`内部，被处理完的`props`会被赋值给`workInProgress.updateQueue`，并最终会在`commit阶段`被渲染在页面上。
 
-```
+```TS
 workInProgress.updateQueue = (updatePayload: any);
 ```
 
@@ -892,7 +899,7 @@ workInProgress.updateQueue = (updatePayload: any);
 - 将子孙`DOM节点`插入刚生成的`DOM节点`中
 - 与`update`逻辑中的`updateHostComponent`类似的处理`props`的过程
 
-```
+```TS
 // mount的情况
 
 // ...省略服务端渲染相关逻辑
@@ -951,10 +958,10 @@ rootFiber.firstEffect -----------> fiber -----------> fiber
 
 至此，`render阶段`全部工作完成。在`performSyncWorkOnRoot`函数中`fiberRootNode`被传递给`commitRoot`方法，开启`commit阶段`工作流程。
 
-```
+```TS
 commitRoot(root);
 ```
 
 代码见[这里](https://github.com/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/react-reconciler/src/ReactFiberWorkLoop.new.js#L1107)。
 
-![image.png](/tencent/api/attachments/s3/url?attachmentid=23022103)
+![image.png](https://i-blog.csdnimg.cn/direct/5bd98357773c40d592685c82d0dede31.png)

@@ -1,3 +1,10 @@
+---
+title: git 用户名邮箱配置
+date: 2024-07-02 20:34:27
+tags: 前端 git
+categories: bo‘k
+---
+
 1.最近新开了一个项目，当我推送到远程的时候（git push），遇到了一些问题
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/14dc1f294d9b402db81bca1f4751a5de.png#pic_center)
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/56adde5ac3814f8183ef9eb6f7e97171.png#pic_center)
