@@ -1,0 +1,396 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>react原理学习 | zhengjiaxi的博客</title><meta name="author" content="zhengjiaxi"><meta name="copyright" content="zhengjiaxi"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="软件的设计是为了服务理念。只有懂了设计理念，才能明白为了实现这样的理念需要如何架构。所以，在我们深入源码架构之前，先来聊聊React理念。 React 理念我们可以从官网看到React的理念：  我们认为，React 是用 JavaScript 构建快速响应的大型 Web 应用程序的首选方式。它在 Facebook 和 Instagram 上表现优秀。  可见，关键是实现快速响应。那么制约快速响应">
+<meta property="og:type" content="article">
+<meta property="og:title" content="react原理学习">
+<meta property="og:url" content="https://github.com/2024/07/25/React%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="zhengjiaxi的博客">
+<meta property="og:description" content="软件的设计是为了服务理念。只有懂了设计理念，才能明白为了实现这样的理念需要如何架构。所以，在我们深入源码架构之前，先来聊聊React理念。 React 理念我们可以从官网看到React的理念：  我们认为，React 是用 JavaScript 构建快速响应的大型 Web 应用程序的首选方式。它在 Facebook 和 Instagram 上表现优秀。  可见，关键是实现快速响应。那么制约快速响应">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn.pixabay.com/photo/2021/09/05/16/48/rapeseed-6599950_960_720.jpg">
+<meta property="article:published_time" content="2024-07-25T20:34:27.000Z">
+<meta property="article:modified_time" content="2024-09-11T12:06:58.958Z">
+<meta property="article:author" content="zhengjiaxi">
+<meta property="article:tag" content="前端 git">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.pixabay.com/photo/2021/09/05/16/48/rapeseed-6599950_960_720.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://github.com/2024/07/25/React%E5%8E%9F%E7%90%86/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'react原理学习',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-09-11 12:06:58'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="referrer" content="never"><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">21</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">10</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">3</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="zhengjiaxi的博客"><span class="site-name">zhengjiaxi的博客</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">react原理学习</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2024-07-25T20:34:27.000Z" title="Created 2024-07-25 20:34:27">2024-07-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2024-09-11T12:06:58.958Z" title="Updated 2024-09-11 12:06:58">2024-09-11</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/bo%E2%80%98k/">bo‘k</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="react原理学习"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="post-content" id="article-container"><p>软件的设计是为了服务理念。只有懂了设计理念，才能明白为了实现这样的理念需要如何架构。<br>所以，在我们深入源码架构之前，先来聊聊<code>React</code>理念。</p>
+<h2 id="React-理念"><a href="#React-理念" class="headerlink" title="React 理念"></a>React 理念</h2><p>我们可以从<a target="_blank" rel="noopener" href="https://zh-hans.reactjs.org/docs/thinking-in-react.html">官网</a>看到<code>React</code>的理念：</p>
+<blockquote>
+<p>我们认为，React 是用 JavaScript 构建<strong>快速响应</strong>的大型 Web 应用程序的首选方式。它在 Facebook 和 Instagram 上表现优秀。</p>
+</blockquote>
+<p>可见，关键是实现<code>快速响应</code>。那么制约<code>快速响应</code>的因素是什么呢？<br>我们日常使用 App，浏览网页时，有两类场景会制约<code>快速响应</code>：</p>
+<ul>
+<li>当遇到大计算量的操作或者设备性能不足使页面掉帧，导致卡顿。<strong>（CPU 的瓶颈）</strong></li>
+<li>发送网络请求后，由于需要等待数据返回才能进一步操作导致不能快速响应。<strong>（IO 的瓶颈）</strong></li>
+</ul>
+<p><code>React</code>是如何解决这两个瓶颈的呢？</p>
+<h2 id="CPU-的瓶颈"><a href="#CPU-的瓶颈" class="headerlink" title="CPU 的瓶颈"></a>CPU 的瓶颈</h2><p>当项目变得庞大、组件数量繁多时，就容易遇到 CPU 的瓶颈。<br>考虑如下 Demo，我们向视图中渲染 3000 个<code>li</code>：</p>
+<figure class="highlight tsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">App</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> len = <span class="number">3000</span>;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      &#123;Array(len)</span></span><br><span class="line"><span class="language-xml">        .fill(0)</span></span><br><span class="line"><span class="language-xml">        .map((_, i) =&gt; (</span></span><br><span class="line"><span class="language-xml">          <span class="tag">&lt;<span class="name">li</span>&gt;</span>&#123;i&#125;<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        ))&#125;</span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> rootEl = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&quot;#root&quot;</span>);</span><br><span class="line"><span class="title class_">ReactDOM</span>.<span class="title function_">render</span>(<span class="language-xml"><span class="tag">&lt;<span class="name">App</span> /&gt;</span></span>, rootEl);</span><br></pre></td></tr></table></figure>
+
+<p>主流浏览器刷新频率为 60Hz，即每（1000ms &#x2F; 60Hz）16.6ms 浏览器刷新一次。<br>我们知道，JS 可以操作 DOM，<code>GUI渲染线程</code>与<code>JS线程</code>是互斥的。所以<strong>JS 脚本执行</strong>和<strong>浏览器布局、绘制</strong>不能同时执行。</p>
+<p>在每 16.6ms 时间内，需要完成如下工作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">JS脚本执行 -----  样式布局 ----- 样式绘制</span><br></pre></td></tr></table></figure>
+
+<p>当 JS 执行时间过长，超出了 16.6ms，这次刷新就没有时间执行<strong>样式布局</strong>和<strong>样式绘制</strong>了。</p>
+<p>在 Demo 中，由于组件数量繁多（3000 个），JS 脚本执行时间过长，页面掉帧，造成卡顿。<br>可以从打印的执行堆栈图看到，JS 执行时间为 73.65ms，远远多于一帧的时间。</p>
+<p><img src="https://react.iamkasong.com/img/long-task.png" alt="长任务"></p>
+<p>如何解决这个问题呢？</p>
+<p>答案是：在浏览器每一帧的时间中，预留一些时间给 JS 线程，<code>React</code>利用这部分时间更新组件（可以看到，在<a href="https://github.com/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/scheduler/src/forks/SchedulerHostConfig.default.js#L119">源码</a>中，预留的初始时间是 5ms）。<br>当预留的时间不够用时，<code>React</code>将线程控制权交还给浏览器使其有时间渲染 UI，<code>React</code>则等待下一帧时间到来继续被中断的工作。</p>
+<blockquote>
+<p>这种将长任务分拆到每一帧中，像蚂蚁搬家一样一次执行一小段任务的操作，被称为<code>时间切片</code>（time slice）</p>
+</blockquote>
+<p>接下来我们开启<code>Concurrent Mode</code>（开启后会启用<code>时间切片</code>）：</p>
+<figure class="highlight tsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 通过使用ReactDOM.unstable_createRoot开启Concurrent Mode</span></span><br><span class="line"><span class="comment">// ReactDOM.render(&lt;App/&gt;, rootEl);</span></span><br><span class="line"><span class="title class_">ReactDOM</span>.<span class="title function_">unstable_createRoot</span>(rootEl).<span class="title function_">render</span>(<span class="language-xml"><span class="tag">&lt;<span class="name">App</span> /&gt;</span></span>);</span><br></pre></td></tr></table></figure>
+
+<p>此时我们的长任务被拆分到每一帧不同的<code>task</code>中，<code>JS脚本</code>执行时间大体在<code>5ms</code>左右，这样浏览器就有剩余时间执行<strong>样式布局</strong>和<strong>样式绘制</strong>，减少掉帧的可能性。</p>
+<p><code>react</code>应用的<code>启动模式</code>:</p>
+<p>在当前稳定版<code>react@17.0.2</code>源码中, 有 3 种启动方式. 先引出官网上对于<a target="_blank" rel="noopener" href="https://zh-hans.reactjs.org/docs/concurrent-mode-adoption.html#why-so-many-modes">这 3 种模式的介绍</a>, 其基本说明如下:</p>
+<ol>
+<li><p><code>legacy</code> 模式: <code>ReactDOM.render(&lt;App /&gt;, rootNode)</code>. 这是当前 React app 使用的方式. 这个模式可能不支持<a target="_blank" rel="noopener" href="https://zh-hans.reactjs.org/docs/concurrent-mode-patterns.html#the-three-steps">这些新功能(concurrent 支持的所有功能)</a>.</p>
+<figure class="highlight tsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// LegacyRoot</span></span><br><span class="line"><span class="title class_">ReactDOM</span>.<span class="title function_">render</span>(<span class="language-xml"><span class="tag">&lt;<span class="name">App</span> /&gt;</span></span>, <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;root&#x27;</span>), <span class="function">(<span class="params">dom</span>) =&gt;</span> &#123;&#125;); <span class="comment">// 支持callback回调, 参数是一个dom对象</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://zh-hans.reactjs.org/docs/concurrent-mode-adoption.html#migration-step-blocking-mode">Blocking 模式</a>: <code>ReactDOM.createBlockingRoot(rootNode).render(&lt;App /&gt;)</code>. 目前正在实验中, 它仅提供了 <code>concurrent</code> 模式的小部分功能, 作为迁移到 <code>concurrent</code> 模式的第一个步骤.</p>
+<figure class="highlight tsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// BlockingRoot// 1. 创建ReactDOMRoot对象</span></span><br><span class="line"><span class="keyword">const</span> reactDOMBlockingRoot = <span class="title class_">ReactDOM</span>.<span class="title function_">createBlockingRoot</span>(  <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;root&#x27;</span>),);</span><br><span class="line"><span class="comment">// 2. 调用render</span></span><br><span class="line">reactDOMBlockingRoot.<span class="title function_">render</span>(<span class="language-xml"><span class="tag">&lt;<span class="name">App</span> /&gt;</span></span>); <span class="comment">// 不支持回调</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://zh-hans.reactjs.org/docs/concurrent-mode-adoption.html#enabling-concurrent-mode">Concurrent 模式</a>: <code>ReactDOM.createRoot(rootNode).render(&lt;App /&gt;)</code>. 目前在实验中, 未来稳定之后，打算作为 React 的默认开发模式. 这个模式开启了所有的新功能.</p>
+<figure class="highlight tsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ConcurrentRoot</span></span><br><span class="line"><span class="comment">// 1. 创建ReactDOMRoot对象</span></span><br><span class="line"><span class="keyword">const</span> reactDOMRoot = <span class="title class_">ReactDOM</span>.<span class="title function_">createRoot</span>(<span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;root&#x27;</span>));</span><br><span class="line"><span class="comment">// 2. 调用render</span></span><br><span class="line">reactDOMRoot.<span class="title function_">render</span>(<span class="language-xml"><span class="tag">&lt;<span class="name">App</span> /&gt;</span></span>); <span class="comment">// 不支持回调</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>注意: 虽然<code>17.0.2</code>的源码中有<a href="https://github.com/facebook/react/blob/v17.0.2/packages/react-dom/src/client/ReactDOM.js#L202"><code>createRoot</code>和<code>createBlockingRoot</code>方法</a>(如果自行构建, <a href="https://github.com/facebook/react/blob/v17.0.2/scripts/rollup/build.js#L30-L35">会默认构建<code>experimental</code>版本</a>), 但是稳定版的构建入口<a href="https://github.com/facebook/react/blob/v17.0.2/packages/react-dom/index.stable.js">排除掉了这两个 api</a>, 所以实际在<code>npm i react-dom</code>安装<code>17.0.2</code>稳定版后, 不能使用该 api.如果要想体验非<code>legacy</code>模式, 需要<a href="https://github.com/reactwg/react-18/discussions/9">显示安装 alpha 版本</a>(或自行构建).</p>
+<p>通过以上内容，我们可以看到，<code>React</code>为了践行“构建<strong>快速响应</strong>的大型 Web 应用程序”理念做出的努力。<br>其中的关键是解决 CPU 的瓶颈与 IO 的瓶颈。而落实到实现上，则需要将<strong>同步的更新</strong>变为<strong>可中断的异步更新</strong>。</p>
+<p><code>React</code>从 v15 升级到 v16 后重构了整个架构。为什么 v15 不能满足<strong>快速响应</strong>的理念，以至于被重构。</p>
+<h2 id="React15-架构"><a href="#React15-架构" class="headerlink" title="React15 架构"></a>React15 架构</h2><p>React15 架构可以分为两层：</p>
+<ul>
+<li>Reconciler（协调器）—— 负责找出变化的组件</li>
+<li>Renderer（渲染器）—— 负责将变化的组件渲染到页面上</li>
+</ul>
+<h3 id="Reconciler（协调器）"><a href="#Reconciler（协调器）" class="headerlink" title="Reconciler（协调器）"></a>Reconciler（协调器）</h3><p>我们知道，在<code>React</code>中可以通过<code>this.setState</code>、<code>this.forceUpdate</code>、<code>ReactDOM.render</code>等 API 触发更新。<br>每当有更新发生时，<strong>Reconciler</strong>会做如下工作：</p>
+<ul>
+<li>调用函数组件、或 class 组件的<code>render</code>方法，将返回的 JSX 转化为虚拟 DOM</li>
+<li>将虚拟 DOM 和上次更新时的虚拟 DOM 对比</li>
+<li>通过对比找出本次更新中变化的虚拟 DOM</li>
+<li>通知<strong>Renderer</strong>将变化的虚拟 DOM 渲染到页面上</li>
+</ul>
+<h3 id="Renderer（渲染器）"><a href="#Renderer（渲染器）" class="headerlink" title="Renderer（渲染器）"></a>Renderer（渲染器）</h3><p>由于<code>React</code>支持跨平台，所以不同平台有不同的<strong>Renderer</strong>。我们前端最熟悉的是负责在浏览器环境渲染的<strong>Renderer</strong> —— <a target="_blank" rel="noopener" href="https://www.npmjs.com/package/react-dom">ReactDOM</a>。<br>除此之外，还有：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.npmjs.com/package/react-native">ReactNative</a>渲染器，渲染 App 原生组件</li>
+<li><a target="_blank" rel="noopener" href="https://www.npmjs.com/package/react-test-renderer">ReactTest</a>渲染器，渲染出纯 Js 对象用于测试</li>
+<li><a target="_blank" rel="noopener" href="https://www.npmjs.com/package/react-art">ReactArt</a>渲染器，渲染到 Canvas, SVG 或 VML (IE8)</li>
+</ul>
+<p>在每次更新发生时，<strong>Renderer</strong>接到<strong>Reconciler</strong>通知，将变化的组件渲染在当前宿主环境。</p>
+<h2 id="React15-架构的缺点"><a href="#React15-架构的缺点" class="headerlink" title="React15 架构的缺点"></a>React15 架构的缺点</h2><p>在<strong>Reconciler</strong>中，<code>mount</code>的组件会调用<a href="https://github.com/facebook/react/blob/15-stable/src/renderers/dom/shared/ReactDOMComponent.js#L498">mountComponent</a>，<code>update</code>的组件会调用<a href="https://github.com/facebook/react/blob/15-stable/src/renderers/dom/shared/ReactDOMComponent.js#L877">updateComponent</a>。这两个方法都会递归更新子组件。</p>
+<p>##递归更新的缺点</p>
+<p>由于递归执行，所以更新一旦开始，中途就无法中断。当层级很深时，递归更新时间超过了 16ms，用户交互就会卡顿。</p>
+<p><strong>Reconciler</strong>和<strong>Renderer</strong>是交替工作的，由于整个过程都是同步的，所以在用户看来所有 DOM 是同时更新的。无法实现中断，否则会看见更新不完全的 DOM，基于这个原因，<code>React</code>决定重写整个架构。</p>
+<h2 id="React16-架构"><a href="#React16-架构" class="headerlink" title="React16 架构"></a>React16 架构</h2><p>React16 架构可以分为三层：</p>
+<ul>
+<li>Scheduler（调度器）—— 调度任务的优先级，高优任务优先进入<strong>Reconciler</strong></li>
+<li>Reconciler（协调器）—— 负责找出变化的组件</li>
+<li>Renderer（渲染器）—— 负责将变化的组件渲染到页面上</li>
+</ul>
+<h3 id="Scheduler（调度器）"><a href="#Scheduler（调度器）" class="headerlink" title="Scheduler（调度器）"></a>Scheduler（调度器）</h3><p>既然我们以浏览器是否有剩余时间作为任务中断的标准，那么我们需要一种机制，当浏览器有剩余时间时通知我们。<br>其实部分浏览器已经实现了这个 API，这就是<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/Window/requestIdleCallback">requestIdleCallback</a>。但是由于以下因素，<code>React</code>放弃使用：</p>
+<ul>
+<li>浏览器兼容性</li>
+<li>触发频率不稳定，受很多因素影响。比如当我们的浏览器切换 tab 后，之前 tab 注册的<code>requestIdleCallback</code>触发的频率会变得很低</li>
+</ul>
+<p>基于以上原因，<code>React</code>实现了功能更完备的<code>requestIdleCallback</code>polyfill，这就是<strong>Scheduler</strong>。除了在空闲时触发回调的功能外，<strong>Scheduler</strong>还提供了多种调度优先级供任务设置。</p>
+<h3 id="Reconciler（协调器）-1"><a href="#Reconciler（协调器）-1" class="headerlink" title="Reconciler（协调器）"></a>Reconciler（协调器）</h3><p>我们知道，在 React15 中<strong>Reconciler</strong>是递归处理虚拟 DOM 的。让我们看看<a href="https://github.com/facebook/react/blob/1fb18e22ae66fdb1dc127347e169e73948778e5a/packages/react-reconciler/src/ReactFiberWorkLoop.new.js#L1673">React16 的 Reconciler</a>。<br>我们可以看见，更新工作从递归变成了可以中断的循环过程。每次循环都会调用<code>shouldYield</code>判断当前是否有剩余时间。</p>
+<figure class="highlight tsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** <span class="doctag">@noinline</span> */</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">workLoopConcurrent</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="comment">// Perform work until Scheduler asks us to yield</span></span><br><span class="line">  <span class="keyword">while</span> (workInProgress !== <span class="literal">null</span> &amp;&amp; !<span class="title function_">shouldYield</span>()) &#123;</span><br><span class="line">    workInProgress = <span class="title function_">performUnitOfWork</span>(workInProgress);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>那么 React16 是如何解决中断更新时 DOM 渲染不完全的问题呢？<br>在 React16 中，<strong>Reconciler</strong>与<strong>Renderer</strong>不再是交替工作。当<strong>Scheduler</strong>将任务交给<strong>Reconciler</strong>后，<strong>Reconciler</strong>会为变化的虚拟 DOM 打上代表增&#x2F;删&#x2F;更新的标记，类似这样：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title class_">Placement</span> = <span class="comment">/*             */</span> <span class="number">0b0000000000010</span>;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title class_">Update</span> = <span class="comment">/*                */</span> <span class="number">0b0000000000100</span>;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title class_">PlacementAndUpdate</span> = <span class="comment">/*    */</span> <span class="number">0b0000000000110</span>;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title class_">Deletion</span> = <span class="comment">/*              */</span> <span class="number">0b0000000001000</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Renderer（渲染器）-1"><a href="#Renderer（渲染器）-1" class="headerlink" title="Renderer（渲染器）"></a>Renderer（渲染器）</h3><p><strong>Renderer</strong>根据<strong>Reconciler</strong>为虚拟 DOM 打的标记，同步执行对应的 DOM 操作。</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/50b9aa78b25d4bc0813e8c170109a32c.png" alt="image.png"></p>
+<p>其中红框中的步骤随时可能由于以下原因被中断：</p>
+<ul>
+<li>有其他更高优任务需要先更新</li>
+<li>当前帧没有剩余时间</li>
+</ul>
+<p>由于红框中的工作都在内存中进行，不会更新页面上的 DOM，所以即使反复中断，用户也不会看见更新不完全的 DOM。</p>
+<p>整个<strong>Scheduler</strong>与<strong>Reconciler</strong>的工作都在内存中进行。只有当所有组件都完成<strong>Reconciler</strong>的工作，才会统一交给<strong>Renderer</strong>。</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/5713eb507ede4c2aa31ea51f2ff0396e.png" alt="image.png"></p>
+<h2 id="基础包结构"><a href="#基础包结构" class="headerlink" title="基础包结构"></a>基础包结构</h2><ol>
+<li>react<blockquote>
+<p>react 基础包, 只提供定义 react 组件(<code>ReactElement</code>)的必要函数, 一般来说需要和渲染器(<code>react-dom</code>,<code>react-native</code>)一同使用. 在编写<code>react</code>应用的代码时, 大部分都是调用此包的 api.</p>
+</blockquote>
+</li>
+<li>react-dom<blockquote>
+<p>react 渲染器之一, 是 react 与 web 平台连接的桥梁(可以在浏览器和 nodejs 环境中使用), 将<code>react-reconciler</code>中的运行结果输出到 web 界面上. 在编写<code>react</code>应用的代码时,大多数场景下, 能用到此包的就是一个入口函数<code>ReactDOM.render(&lt;App/&gt;, document.getElementById(&#39;root&#39;))</code>, 其余使用的 api, 基本是<code>react</code>包提供的.</p>
+</blockquote>
+</li>
+<li>react-reconciler<blockquote>
+<p>react 得以运行的核心包(综合协调<code>react-dom</code>,<code>react</code>,<code>scheduler</code>各包之间的调用与配合).<br>管理 react 应用状态的输入和结果的输出. 将输入信号最终转换成输出信号传递给渲染器.</p>
+</blockquote>
+<ul>
+<li>接受输入(<code>scheduleUpdateOnFiber</code>), 将<code>fiber</code>树生成逻辑封装到一个回调函数中(涉及<code>fiber</code>树形结构, <code>fiber.updateQueue</code>队列, 调和算法等),</li>
+<li>把此回调函数(<code>performSyncWorkOnRoot</code>或<code>performConcurrentWorkOnRoot</code>)送入<code>scheduler</code>进行调度</li>
+<li><code>scheduler</code>会控制回调函数执行的时机, 回调函数执行完成后得到全新的 fiber 树</li>
+<li>再调用渲染器(如<code>react-dom</code>, <code>react-native</code>等)将 fiber 树形结构最终反映到界面上</li>
+</ul>
+</li>
+<li>scheduler<blockquote>
+<p>调度机制的核心实现, 控制由<code>react-reconciler</code>送入的回调函数的执行时机, 在<code>concurrent</code>模式下可以实现任务分片. 在编写<code>react</code>应用的代码时, 同样几乎不会直接用到此包提供的 api.</p>
+</blockquote>
+<ul>
+<li>核心任务就是执行回调(回调函数由<code>react-reconciler</code>提供)</li>
+<li>通过控制回调函数的执行时机, 来达到任务分片的目的, 实现可中断渲染(<code>concurrent</code>模式下才有此特性)</li>
+</ul>
+</li>
+</ol>
+<p><img src="https://i-blog.csdnimg.cn/direct/c3521758c6584a91ba5322e7f3f4e8b5.png" alt="image.png"></p>
+<h2 id="Fiber-的起源"><a href="#Fiber-的起源" class="headerlink" title="Fiber 的起源"></a>Fiber 的起源</h2><blockquote>
+<p>最早的<code>Fiber</code>官方解释来源于<a href="https://github.com/acdlite/react-fiber-architecture">2016 年 React 团队成员 Acdlite 的一篇介绍</a>。</p>
+</blockquote>
+<p>在<code>React15</code>及以前，<code>Reconciler</code>采用递归的方式创建虚拟 DOM，递归过程是不能中断的。如果组件树的层级很深，递归会占用线程很多时间，造成卡顿。</p>
+<p>为了解决这个问题，<code>React16</code>将<strong>递归的无法中断的更新</strong>重构为<strong>异步的可中断更新</strong>，由于曾经用于递归的<strong>虚拟 DOM</strong>数据结构已经无法满足需要。于是，全新的<code>Fiber</code>架构应运而生。</p>
+<h2 id="Fiber-的含义"><a href="#Fiber-的含义" class="headerlink" title="Fiber 的含义"></a>Fiber 的含义</h2><p><code>Fiber</code>包含三层含义：</p>
+<ol>
+<li>作为架构来说，之前<code>React15</code>的<code>Reconciler</code>采用递归的方式执行，数据保存在递归调用栈中，所以被称为<code>stack Reconciler</code>。<code>React16</code>的<code>Reconciler</code>基于<code>Fiber节点</code>实现，被称为<code>Fiber Reconciler</code>。</li>
+<li>作为静态的数据结构来说，每个<code>Fiber节点</code>对应一个<code>React element</code>，保存了该组件的类型（函数组件&#x2F;类组件&#x2F;原生组件…）、对应的 DOM 节点等信息。</li>
+<li>作为动态的工作单元来说，每个<code>Fiber节点</code>保存了本次更新中该组件改变的状态、要执行的工作（需要被删除&#x2F;被插入页面中&#x2F;被更新…）。</li>
+</ol>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">FiberNode</span>(<span class="params"></span></span><br><span class="line"><span class="params">  tag: WorkTag,</span></span><br><span class="line"><span class="params">  pendingProps: mixed,</span></span><br><span class="line"><span class="params">  key: <span class="literal">null</span> | <span class="built_in">string</span>,</span></span><br><span class="line"><span class="params">  mode: TypeOfMode,</span></span><br><span class="line"><span class="params"></span>) &#123;</span><br><span class="line">  <span class="comment">// 作为静态数据结构的属性</span></span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">tag</span> = tag;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">key</span> = key;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">elementType</span> = <span class="literal">null</span>;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">type</span> = <span class="literal">null</span>;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">stateNode</span> = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 用于连接其他Fiber节点形成Fiber树</span></span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">return</span> = <span class="literal">null</span>;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">child</span> = <span class="literal">null</span>;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">sibling</span> = <span class="literal">null</span>;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">index</span> = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">ref</span> = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 作为动态的工作单元的属性</span></span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">pendingProps</span> = pendingProps;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">memoizedProps</span> = <span class="literal">null</span>;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">updateQueue</span> = <span class="literal">null</span>;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">memoizedState</span> = <span class="literal">null</span>;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">dependencies</span> = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">mode</span> = mode;</span><br><span class="line"></span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">effectTag</span> = <span class="title class_">NoEffect</span>;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">nextEffect</span> = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">firstEffect</span> = <span class="literal">null</span>;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">lastEffect</span> = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 调度优先级相关</span></span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">lanes</span> = <span class="title class_">NoLanes</span>;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">childLanes</span> = <span class="title class_">NoLanes</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 指向该fiber在另一次更新时对应的fiber</span></span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">alternate</span> = <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="作为架构来说"><a href="#作为架构来说" class="headerlink" title="作为架构来说"></a>作为架构来说</h3><p>每个 Fiber 节点有个对应的<code>React element</code>，多个<code>Fiber节点</code>是如何连接形成树呢？靠如下三个属性：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 指向父级Fiber节点</span></span><br><span class="line"><span class="variable language_">this</span>.<span class="property">return</span> = <span class="literal">null</span>;</span><br><span class="line"><span class="comment">// 指向子Fiber节点</span></span><br><span class="line"><span class="variable language_">this</span>.<span class="property">child</span> = <span class="literal">null</span>;</span><br><span class="line"><span class="comment">// 指向右边第一个兄弟Fiber节点</span></span><br><span class="line"><span class="variable language_">this</span>.<span class="property">sibling</span> = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+
+<p>举个例子，如下的组件结构：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">App</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      i am</span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">span</span>&gt;</span>alaia<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对应的<code>Fiber树</code>结构：<br><img src="https://i-blog.csdnimg.cn/direct/554348377a37480892ff8869d5fdaefe.png" alt="image.png"></p>
+<h3 id="作为静态的数据结构"><a href="#作为静态的数据结构" class="headerlink" title="作为静态的数据结构"></a>作为静态的数据结构</h3><p>作为一种静态的数据结构，保存了组件相关的信息：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Fiber对应组件的类型 Function/Class/Host...</span></span><br><span class="line"><span class="variable language_">this</span>.<span class="property">tag</span> = tag;</span><br><span class="line"><span class="comment">// key属性</span></span><br><span class="line"><span class="variable language_">this</span>.<span class="property">key</span> = key;</span><br><span class="line"><span class="comment">// 大部分情况同type，某些情况不同，比如FunctionComponent使用React.memo包裹</span></span><br><span class="line"><span class="variable language_">this</span>.<span class="property">elementType</span> = <span class="literal">null</span>;</span><br><span class="line"><span class="comment">// 对于 FunctionComponent，指函数本身，对于ClassComponent，指class，对于HostComponent，指DOM节点tagName</span></span><br><span class="line"><span class="variable language_">this</span>.<span class="property">type</span> = <span class="literal">null</span>;</span><br><span class="line"><span class="comment">// Fiber对应的真实DOM节点</span></span><br><span class="line"><span class="variable language_">this</span>.<span class="property">stateNode</span> = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="作为动态的工作单元"><a href="#作为动态的工作单元" class="headerlink" title="作为动态的工作单元"></a>作为动态的工作单元</h3><p>作为动态的工作单元，<code>Fiber</code>中如下参数保存了本次更新相关的信息：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 保存本次更新造成的状态改变相关信息</span></span><br><span class="line"><span class="variable language_">this</span>.<span class="property">pendingProps</span> = pendingProps;</span><br><span class="line"><span class="variable language_">this</span>.<span class="property">memoizedProps</span> = <span class="literal">null</span>;</span><br><span class="line"><span class="variable language_">this</span>.<span class="property">updateQueue</span> = <span class="literal">null</span>;</span><br><span class="line"><span class="variable language_">this</span>.<span class="property">memoizedState</span> = <span class="literal">null</span>;</span><br><span class="line"><span class="variable language_">this</span>.<span class="property">dependencies</span> = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">this</span>.<span class="property">mode</span> = mode;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 保存本次更新会造成的DOM操作</span></span><br><span class="line"><span class="variable language_">this</span>.<span class="property">effectTag</span> = <span class="title class_">NoEffect</span>;</span><br><span class="line"><span class="variable language_">this</span>.<span class="property">nextEffect</span> = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">this</span>.<span class="property">firstEffect</span> = <span class="literal">null</span>;</span><br><span class="line"><span class="variable language_">this</span>.<span class="property">lastEffect</span> = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+
+<p>如下两个字段保存调度优先级相关的信息：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 调度优先级相关</span></span><br><span class="line"><span class="variable language_">this</span>.<span class="property">lanes</span> = <span class="title class_">NoLanes</span>;</span><br><span class="line"><span class="variable language_">this</span>.<span class="property">childLanes</span> = <span class="title class_">NoLanes</span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>Fiber节点</code>可以构成<code>Fiber树</code>。那么<code>Fiber树</code>和页面呈现的<code>DOM树</code>有什么关系，<code>React</code>又是如何更新<code>DOM</code>的呢</p>
+<h3 id="ReactElement-Fiber-DOM-三者的关系"><a href="#ReactElement-Fiber-DOM-三者的关系" class="headerlink" title="ReactElement, Fiber, DOM 三者的关系"></a>ReactElement, Fiber, DOM 三者的关系</h3><p>这里我们梳理出<code>ReactElement, Fiber, DOM</code>这 3 种对象的关系</p>
+<ol>
+<li><a href="https://github.com/facebook/react/blob/v17.0.2/packages/react/src/ReactElement.js#L126-L146">ReactElement 对象</a>(type 定义在<a href="https://github.com/facebook/react/blob/v17.0.2/packages/shared/ReactElementType.js#L15">shared 包中</a>)<ul>
+<li>所有采用<code>jsx</code>语法书写的节点, 都会被编译器转换, 最终会以<code>React.createElement(...)</code>的方式, 创建出来一个与之对应的<code>ReactElement</code>对象</li>
+</ul>
+</li>
+<li><a href="https://github.com/facebook/react/blob/v17.0.2/packages/react-reconciler/src/ReactFiber.old.js#L116-L155">fiber 对象</a>(type 类型的定义在<a href="https://github.com/facebook/react/blob/v17.0.2/packages/react-reconciler/src/ReactInternalTypes.js#L47-L174">ReactInternalTypes.js</a>中)<ul>
+<li><code>fiber对象</code>是通过<code>ReactElement</code>对象进行创建的, 多个<code>fiber对象</code>构成了一棵<code>fiber树</code>, <code>fiber树</code>是构造<code>DOM树</code>的数据模型, <code>fiber树</code>的任何改动, 最后都体现到<code>DOM树</code>.</li>
+</ul>
+</li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/Document_Object_Model">DOM 对象</a>: 文档对象模型<ul>
+<li><code>DOM</code>将文档解析为一个由节点和对象（包含属性和方法的对象）组成的结构集合, 也就是常说的<code>DOM树</code>.</li>
+<li><code>JavaScript</code>可以访问和操作存储在 DOM 中的内容, 也就是操作<code>DOM对象</code>, 进而触发 UI 渲染.</li>
+</ul>
+</li>
+</ol>
+<p><img src="https://i-blog.csdnimg.cn/direct/be1feb471b2641558f29b26e3abaf339.png" alt="image.png"></p>
+<p>它们之间的关系反映了我们书写的 JSX 代码到 DOM 节点的转换过程：<br><img src="https://i-blog.csdnimg.cn/direct/f9c7057ae7fa4bbc908b43d228337248.png" alt="image.png"></p>
+<h3 id="双缓冲技术-double-buffering"><a href="#双缓冲技术-double-buffering" class="headerlink" title="双缓冲技术(double buffering)"></a>双缓冲技术(double buffering)</h3><p><code>ReactElement, Fiber, DOM三者的关系</code>, <code>fiber树</code>的构造过程, 就是把<code>Res; this.childLactElemes = NoLant</code>转换成<code>fiber树</code>的过程. 在这个过程中, 内存里会同时存在 2 棵<code>fiber树</code>:</p>
+<ul>
+<li>其一: 代表当前界面的<code>fiber</code>树(已经被展示出来, 挂载到<code>fiberRoot.current</code>上). 如果是初次构造(<code>初始化渲染</code>), 页面还没有渲染, 此时界面对应的 fiber 树为空(<code>fiberRoot.current = null</code>).</li>
+<li>其二: 正在构造的<code>fiber</code>树(即将展示出来, 挂载到<code>HostRootFiber.alternate</code>上, 正在构造的节点称为<code>workInProgress</code>). 当构造完成之后, 重新渲染页面, 最后切换<code>fiberRoot.current = workInProgress</code>, 使得<code>fiberRoot.currement</code>重新指向代表当前界面的<code>fiber</code>树.</li>
+</ul>
+<p>此处涉及到 2 个全局对象<code>fiberRoot</code>和<code>HostRootFiber</code>, 在<a target="_blank" rel="noopener" href="https://7km.top/main/bootstrap">React 应用的启动过程</a>中有详细的说明.<br>用图来表述<code>double buffering</code>的概念如下:</p>
+<ol>
+<li>构造过程中, <code>fiberRoot.curreact</code>指向当前界面对应的<code>fiber</code>树.<br><img src="https://i-blog.csdnimg.cn/direct/8303b37df32b4b7090274b9181bf6b64.png" alt="image.png"></li>
+<li>构造完成并渲染, 切换<code>fiberRook/react.current</code>指针, 使其继续指向当前界面对应的<code>fiber</code>树(原来代表界面的 fiber 树, 变成了内存中).<br><img src="https://i-blog.csdnimg.cn/direct/80c7cc52f68c454a92907ce7ca3f01fc.png" alt="image.png"></li>
+</ol>
+<h2 id="React-工作循环-workLoop"><a href="#React-工作循环-workLoop" class="headerlink" title="React 工作循环 (workLoop)"></a>React 工作循环 (workLoop)</h2><p>在 reaactElement 工作时有两个大的循环, 它们分别位于<code>scheduler</code>和<code>react/blob/v17.0.2/packages/react-reconciler</code>包中:</p>
+<p><img src="https://i-blog.csdnimg.cn/direct/51bc2eb27a844d10996fc53ed66bfec9.png" alt="image.png"></p>
+<p>本文将这两个循环分别表述为<code>任务调度循环</code>和<code>fiber构造循环</code></p>
+<ol>
+<li><code>任务调度循环</code></li>
+</ol>
+<p>源码位于<a href="https://github.com/facebook/react/blob/v17.0.2/packages/scheduler/src/Scheduler.js"><code>Scheduler.js</code></a>, 它是<code>react</code>应用得以运行的保证, 它需要循环调用, 控制所有任务(<code>task</code>)的调度. 2. <code>fiber构造循环</code></p>
+<p>源码位于<a href="https://github.com/facebook/react/blob/v17.0.2/packages/react-reconciler/src/ReactFiberWorkLoop.old.js"><code>ReactFiberWorkLoop.js</code></a>, 控制 fiber 树的构造, 整个过程是一个<a target="_blank" rel="noopener" href="https://7km.top/algorithm/dfs">深度优先遍历</a>.<br>这两个循环对应的 js 源码不同于其他闭包(运行时就是闭包), 其中定义的全局变量, 不仅是该作用域的私有变量, 更用于<code>控制react应用的执行过程</code>.</p>
+<p>可以将 react 运行的主干逻辑进行概括:</p>
+<ol>
+<li>输入: 将每一次更新(如: 新增, 删除, 修改节点之后)视为一次<code>更新需求</code>(目的是要更新<code>DOM</code>节点).</li>
+<li>注册调度任务: <code>react-reconciler</code>收到<code>更新需求</code>之后, 并不会立即构造<code>fiber树</code>, 而是去调度中心<code>scheduler</code>注册一个新任务<code>task</code>, 即把<code>更新需求</code>转换成一个<code>task</code>.</li>
+<li>执行调度任务(输出): 调度中心<code>scheduler</code>通过<code>任务调度循环</code>来执行<code>task</code>(<code>task</code>的执行过程又回到了<code>react-reconciler</code>包中).<ul>
+<li><code>fiber构造循环</code>是<code>task</code>的实现环节之一, 循环完成之后会构造出最新的 fiber 树.</li>
+<li><code>commitRoot</code>是<code>task</code>的实现环节之二, 把最新的 fiber 树最终渲染到页面上, <code>task</code>完成.</li>
+</ul>
+</li>
+</ol>
+<p>主干逻辑就是<code>输入到输出</code>这一条链路, 为了更好的性能(如<code>批量更新</code>, <code>可中断渲染</code>等功能), <code>react</code>在输入到输出的链路上做了很多优化策略, 比如本文讲述的<code>任务调度循环</code>和<code>fiber构造循环</code>相互配合就可以实现<code>可中断渲染</code>.</p>
+<h2 id="React-应用的启动过程"><a href="#React-应用的启动过程" class="headerlink" title="React 应用的启动过程"></a>React 应用的启动过程</h2><p><code>react</code>应用程序的启动过程, 位于<code>react-dom</code>包, 衔接<code>reconciler 运作流程</code>中的<a target="_blank" rel="noopener" href="https://7km.top/main/reconciler-workflow#%E8%BE%93%E5%85%A5"><code>输入</code></a>步骤.</p>
+<h2 id="启动流程"><a href="#启动流程" class="headerlink" title="启动流程"></a>启动流程</h2><p>在调用入口函数之前,<code>reactElement(&lt;App/&gt;)</code>和 DOM 对象<code>div#root</code>之间没有关联, 用图片表示如下:<br><img src="https://i-blog.csdnimg.cn/direct/e71dc06b26534483a609de2527d7ec79.png" alt="image"></p>
+<h3 id="创建全局对象"><a href="#创建全局对象" class="headerlink" title="创建全局对象"></a>创建全局对象</h3><p>无论<code>Legacy, Concurrent或Blocking</code>模式, react 在初始化时, 都会创建 3 个全局对象</p>
+<ol>
+<li><a href="https://github.com/facebook/react/blob/v17.0.2/packages/react-dom/src/client/ReactDOMRoot.js#L62-L72"><code>ReactDOM(Blocking)Root</code>对象</a></li>
+</ol>
+<ul>
+<li>属于<code>react-dom</code>包, 该对象<a href="https://github.com/facebook/react/blob/v17.0.2/packages/react-dom/src/client/ReactDOMRoot.js#L62-L104">暴露有<code>render,unmount</code>方法</a>, 通过调用该实例的<code>render</code>方法, 可以引导 react 应用的启动.</li>
+</ul>
+<ol>
+<li><a href="https://github.com/facebook/react/blob/v17.0.2/packages/react-reconciler/src/ReactFiberRoot.old.js#L83-L103"><code>fiberRoot</code>对象</a><ul>
+<li>属于<code>react-reconciler</code>包, 作为<code>react-reconciler</code>在运行过程中的全局上下文, 保存 fiber 构建过程中所依赖的全局状态.</li>
+<li>其大部分实例变量用来存储<code>fiber 构造循环</code>(详见<a target="_blank" rel="noopener" href="https://7km.top/main/workloop"><code>两大工作循环</code></a>)过程的各种状态.react 应用内部, 可以根据这些实例变量的值, 控制执行逻辑.</li>
+</ul>
+</li>
+<li><a href="https://github.com/facebook/react/blob/v17.0.2/packages/react-reconciler/src/ReactFiber.old.js#L431-L449"><code>HostRootFiber</code>对象</a><ul>
+<li>属于<code>react-reconciler</code>包, 这是 react 应用中的第一个 Fiber 对象, 是 Fiber 树的根节点, 节点的类型是<code>HostRoot</code>.</li>
+</ul>
+</li>
+</ol>
+<p>这 3 个对象是 react 体系得以运行的基本保障, 一经创建大多数场景不会再销毁(除非卸载整个应用<code>root.unmount()</code>).<br>这一过程是从<code>react-dom</code>包发起, 内部调用了<code>react-reconciler</code>包, 核心流程图如下(其中红色标注了 3 个对象的创建时机).<br><img src="https://i-blog.csdnimg.cn/direct/75505effcf424383aba085e6b0457d3f.png" alt="image.png"></p>
+<h3 id="创建-ReactDOM-Blocking-Root-对象"><a href="#创建-ReactDOM-Blocking-Root-对象" class="headerlink" title="创建 ReactDOM(Blocking)Root 对象"></a>创建 ReactDOM(Blocking)Root 对象</h3><p>由于 3 种模式启动的 api 有所不同, 所以从源码上追踪, 也对应了 3 种方式. 最终都 new 一个<code>ReactDOMRoot</code>或<code>ReactDOMBlockingRoot</code>的实例, 需要创建过程中<code>RootTag</code>参数, 3 种模式各不相同. 该<code>RootTag</code>的类型决定了整个 react 应用是否支持<a target="_blank" rel="noopener" href="https://7km.top/main/bootstrap#%E5%8F%AF%E4%B8%AD%E6%96%AD%E6%B8%B2%E6%9F%93">可中断渲染(后文有解释)</a>.<br>我们暂时只分析 legacy 模式</p>
+<h4 id="legacy-模式"><a href="#legacy-模式" class="headerlink" title="legacy 模式"></a>legacy 模式</h4><p><code>legacy</code>模式表面上是直接调用<code>ReactDOM.render</code>, <code>可中断渲染</code>等功能), 跟踪<code>ReactDOM.render</code>后续调用<code>legacyRenderSubtreeIntoContainer</code>(<a href="https://github.com/facebook/react/blob/v17.0.2/packages/react-dom/src/client/ReactDOMLegacy.js#L175-L222">源码链接</a>)</p>
+<p>继续跟踪<code>legacyCreateRootFromDOMContainer</code>. 最后调用<code>new ReactDOMBlockingRoot(container, LegacyRoot, options);</code></p>
+<p>通过以上分析,<code>legacy</code>模式下调用<code>ReactDOM.render</code>有 2 个核心步骤:</p>
+<ol>
+<li>创建<code>ReactDOMBlockingRoot</code>实例(在 Concurrent 模式和 Blocking 模式中详细分析该类), 初始化 react 应用环境.</li>
+<li>调用<code>updateContainer</code>进行更新.</li>
+</ol>
+<h3 id="创建-fiberRoot-对象"><a href="#创建-fiberRoot-对象" class="headerlink" title="创建 fiberRoot 对象"></a>创建 fiberRoot 对象</h3></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="https://github.com">zhengjiaxi</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://github.com/2024/07/25/React%E5%8E%9F%E7%90%86/">https://github.com/2024/07/25/React%E5%8E%9F%E7%90%86/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%89%8D%E7%AB%AF-git/">前端 git</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.pixabay.com/photo/2021/09/05/16/48/rapeseed-6599950_960_720.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/09/11/Web%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" title=""><img class="cover" src="https://cdn.pixabay.com/photo/2021/09/05/16/48/rapeseed-6599950_960_720.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info"></div></div></a></div><div class="next-post pull-right"><a href="/2024/07/20/Web%E5%89%8D%E7%AB%AF%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%80%BB%E7%BB%93/" title="Web前端性能优化"><img class="cover" src="https://cdn.pixabay.com/photo/2021/09/05/16/48/rapeseed-6599950_960_720.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">Web前端性能优化</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2024/07/20/Web%E5%89%8D%E7%AB%AF%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%80%BB%E7%BB%93/" title="Web前端性能优化"><img class="cover" src="https://cdn.pixabay.com/photo/2021/09/05/16/48/rapeseed-6599950_960_720.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-20</div><div class="title">Web前端性能优化</div></div></a></div><div><a href="/2024/06/14/git%E4%B8%ADmerge%E5%92%8Crebase%E5%8C%BA%E5%88%AB/" title="git中merge和rebase的区别"><img class="cover" src="https://cdn.pixabay.com/photo/2021/09/05/16/48/rapeseed-6599950_960_720.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-14</div><div class="title">git中merge和rebase的区别</div></div></a></div><div><a href="/2024/07/02/git%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3/" title="git 用户名邮箱配置"><img class="cover" src="https://lmy-1311156074.cos.ap-nanjing.myqcloud.com/test/wallhaven-yxjppd_1920x1080.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-02</div><div class="title">git 用户名邮箱配置</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">zhengjiaxi</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">21</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">10</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">3</div></a></div><a id="card-info-btn" href="https://github.com/zhengzhengzzzz"><i class="fab fa-github"></i><span>Star</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">分享开发经验</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#React-%E7%90%86%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">React 理念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CPU-%E7%9A%84%E7%93%B6%E9%A2%88"><span class="toc-number">2.</span> <span class="toc-text">CPU 的瓶颈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React15-%E6%9E%B6%E6%9E%84"><span class="toc-number">3.</span> <span class="toc-text">React15 架构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Reconciler%EF%BC%88%E5%8D%8F%E8%B0%83%E5%99%A8%EF%BC%89"><span class="toc-number">3.1.</span> <span class="toc-text">Reconciler（协调器）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Renderer%EF%BC%88%E6%B8%B2%E6%9F%93%E5%99%A8%EF%BC%89"><span class="toc-number">3.2.</span> <span class="toc-text">Renderer（渲染器）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React15-%E6%9E%B6%E6%9E%84%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="toc-number">4.</span> <span class="toc-text">React15 架构的缺点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React16-%E6%9E%B6%E6%9E%84"><span class="toc-number">5.</span> <span class="toc-text">React16 架构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Scheduler%EF%BC%88%E8%B0%83%E5%BA%A6%E5%99%A8%EF%BC%89"><span class="toc-number">5.1.</span> <span class="toc-text">Scheduler（调度器）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Reconciler%EF%BC%88%E5%8D%8F%E8%B0%83%E5%99%A8%EF%BC%89-1"><span class="toc-number">5.2.</span> <span class="toc-text">Reconciler（协调器）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Renderer%EF%BC%88%E6%B8%B2%E6%9F%93%E5%99%A8%EF%BC%89-1"><span class="toc-number">5.3.</span> <span class="toc-text">Renderer（渲染器）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E5%8C%85%E7%BB%93%E6%9E%84"><span class="toc-number">6.</span> <span class="toc-text">基础包结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Fiber-%E7%9A%84%E8%B5%B7%E6%BA%90"><span class="toc-number">7.</span> <span class="toc-text">Fiber 的起源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Fiber-%E7%9A%84%E5%90%AB%E4%B9%89"><span class="toc-number">8.</span> <span class="toc-text">Fiber 的含义</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%9C%E4%B8%BA%E6%9E%B6%E6%9E%84%E6%9D%A5%E8%AF%B4"><span class="toc-number">8.1.</span> <span class="toc-text">作为架构来说</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%9C%E4%B8%BA%E9%9D%99%E6%80%81%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-number">8.2.</span> <span class="toc-text">作为静态的数据结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%9C%E4%B8%BA%E5%8A%A8%E6%80%81%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8D%95%E5%85%83"><span class="toc-number">8.3.</span> <span class="toc-text">作为动态的工作单元</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ReactElement-Fiber-DOM-%E4%B8%89%E8%80%85%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">8.4.</span> <span class="toc-text">ReactElement, Fiber, DOM 三者的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8C%E7%BC%93%E5%86%B2%E6%8A%80%E6%9C%AF-double-buffering"><span class="toc-number">8.5.</span> <span class="toc-text">双缓冲技术(double buffering)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-%E5%B7%A5%E4%BD%9C%E5%BE%AA%E7%8E%AF-workLoop"><span class="toc-number">9.</span> <span class="toc-text">React 工作循环 (workLoop)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-%E5%BA%94%E7%94%A8%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B"><span class="toc-number">10.</span> <span class="toc-text">React 应用的启动过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B"><span class="toc-number">11.</span> <span class="toc-text">启动流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%85%A8%E5%B1%80%E5%AF%B9%E8%B1%A1"><span class="toc-number">11.1.</span> <span class="toc-text">创建全局对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA-ReactDOM-Blocking-Root-%E5%AF%B9%E8%B1%A1"><span class="toc-number">11.2.</span> <span class="toc-text">创建 ReactDOM(Blocking)Root 对象</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#legacy-%E6%A8%A1%E5%BC%8F"><span class="toc-number">11.2.1.</span> <span class="toc-text">legacy 模式</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA-fiberRoot-%E5%AF%B9%E8%B1%A1"><span class="toc-number">11.3.</span> <span class="toc-text">创建 fiberRoot 对象</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/09/11/Web%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" title="No title"><img src="https://cdn.pixabay.com/photo/2021/09/05/16/48/rapeseed-6599950_960_720.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="No title"/></a><div class="content"><a class="title" href="/2024/09/11/Web%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" title="No title">No title</a><time datetime="2024-09-11T12:06:58.958Z" title="Created 2024-09-11 12:06:58">2024-09-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/07/25/React%E5%8E%9F%E7%90%86/" title="react原理学习"><img src="https://cdn.pixabay.com/photo/2021/09/05/16/48/rapeseed-6599950_960_720.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="react原理学习"/></a><div class="content"><a class="title" href="/2024/07/25/React%E5%8E%9F%E7%90%86/" title="react原理学习">react原理学习</a><time datetime="2024-07-25T20:34:27.000Z" title="Created 2024-07-25 20:34:27">2024-07-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/07/20/Web%E5%89%8D%E7%AB%AF%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%80%BB%E7%BB%93/" title="Web前端性能优化"><img src="https://cdn.pixabay.com/photo/2021/09/05/16/48/rapeseed-6599950_960_720.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Web前端性能优化"/></a><div class="content"><a class="title" href="/2024/07/20/Web%E5%89%8D%E7%AB%AF%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%80%BB%E7%BB%93/" title="Web前端性能优化">Web前端性能优化</a><time datetime="2024-07-20T16:34:27.000Z" title="Created 2024-07-20 16:34:27">2024-07-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/07/05/%E6%B5%8F%E8%A7%88%E5%99%A8%E6%8F%92%E4%BB%B6/" title="浏览器插件"><img src="https://lmy-1311156074.cos.ap-nanjing.myqcloud.com/test/wallhaven-gpjo6e_1920x1080.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="浏览器插件"/></a><div class="content"><a class="title" href="/2024/07/05/%E6%B5%8F%E8%A7%88%E5%99%A8%E6%8F%92%E4%BB%B6/" title="浏览器插件">浏览器插件</a><time datetime="2024-07-05T17:59:56.000Z" title="Created 2024-07-05 17:59:56">2024-07-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/07/02/git%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3/" title="git 用户名邮箱配置"><img src="https://lmy-1311156074.cos.ap-nanjing.myqcloud.com/test/wallhaven-yxjppd_1920x1080.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="git 用户名邮箱配置"/></a><div class="content"><a class="title" href="/2024/07/02/git%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3/" title="git 用户名邮箱配置">git 用户名邮箱配置</a><time datetime="2024-07-02T20:34:27.000Z" title="Created 2024-07-02 20:34:27">2024-07-02</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By zhengjiaxi</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
